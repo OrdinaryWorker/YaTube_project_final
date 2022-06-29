@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -80,7 +82,7 @@ class PostURLTests(TestCase):
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
                 self.assertEqual(response.status_code,
-                                 200,
+                                 HTTPStatus.OK,
                                  test_case['url_exception']
                                  )
 
@@ -95,15 +97,15 @@ class PostURLTests(TestCase):
                                      'Тест на авторство поста не пройден'
                                      )
                     self.assertEqual(response.status_code,
-                                     302,
+                                     HTTPStatus.FOUND,
                                      test_case['url_exception'])
                 elif 'create' in address:
                     self.assertEqual(response.status_code,
-                                     302,
+                                     HTTPStatus.FOUND,
                                      test_case['url_exception'])
                 else:
                     self.assertEqual(response.status_code,
-                                     200,
+                                     HTTPStatus.OK,
                                      test_case['url_exception'])
 
     def test_urls_uses_correct_template(self):

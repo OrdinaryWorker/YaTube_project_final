@@ -1,6 +1,7 @@
 # import os
 import shutil
 import tempfile
+from http import HTTPStatus
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -128,13 +129,7 @@ class ContextTest(TestCase):
             data=form_data,
             follow=True
         )
-        # Проверка что картинка сохранена на жестком диске,
-        # проверка отключена, чтобы пройти тесты на сервере,
-        # локально проверка работает
-        # self.assertTrue(
-        #     self.uploaded.name in os.listdir(f'{TEMP_MEDIA_ROOT}\\posts')
-        # )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(
             Post.objects.filter(
                 text=form_data['text'],
@@ -411,9 +406,9 @@ class FollowsTest(TestCase):
         self.authorized_author = Client()
         self.authorized_author.force_login(self.author_user)
 
-    def test_follow_and_unfollow_for_auth_user(self):
+    def test_follow_for_auth_user(self):
         """Тест для проверки наличия возможности авторизованного пользователя
-        подписываться и отписываться от авторов"""
+        подписываться на авторов"""
         self.authorized_subscriber.get(
             reverse('posts:profile_follow', args=['author'])
         )
@@ -421,10 +416,16 @@ class FollowsTest(TestCase):
             user=self.user,
             author=self.author_user
         ).exists())
-        Follow.objects.filter(
-            user=self.user,
-            author=self.author_user
-        ).delete()
+
+    def test_unfollow_for_auth_user(self):
+        """Тест для проверки наличия возможности авторизованного пользователя
+        отписываться от авторов"""
+        self.authorized_subscriber.get(
+            reverse('posts:profile_follow', args=['author'])
+        )
+        self.authorized_subscriber.get(
+            reverse('posts:profile_unfollow', args=['author'])
+        )
         self.assertFalse(Follow.objects.filter(
             user=self.user,
             author=self.author_user

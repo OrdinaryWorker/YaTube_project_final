@@ -33,7 +33,7 @@
         <img class="card-img my-2" src="{{ im.url }}">
       {% endthumbnail %}
       <p>
-        {{ post.text }}
+        {{ post.text|linebreaksbr }}
       </p>
       {% if request.user == post.author %}
           <a class="btn btn-primary"
@@ -65,12 +65,11 @@
               </a>
             </h5>
               <p>
-               {{ comment.text }}
+               {{ comment.text|linebreaksbr }}
               </p>
             </div>
           </div>
       {% endfor %}
     </article>
   </div>
-  {% include 'posts/includes/../includes/paginator.html' %}
 {% endblock %}

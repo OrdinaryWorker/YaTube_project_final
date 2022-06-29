@@ -16,7 +16,8 @@
         </a>
       {% else %}
         <a class="btn btn-lg btn-primary"
-          href="{% url 'posts:profile_follow' author.username %}" role="button">
+          href="{% url 'posts:profile_follow' author.username %}" role="button"
+        >
           Подписаться
         </a>
      {% endif %}
@@ -52,6 +53,6 @@
         <hr>
       {% endif %}
     {% endfor %}
-    {% include 'posts/includes/paginator.html' %}
+  {% include 'includes/paginator.html' %}
   </div>
 {% endblock %}

@@ -68,7 +68,6 @@ def post_edit(request, post_id):
 def post_detail(request, post_id: int):
     post = get_object_or_404(Post, pk=post_id)
     form = CommentForm()
-    # comments = reversed(post.comments.all())
     comments = post.comments.all()
     context = {
         'post': post,
@@ -87,7 +86,6 @@ def add_comment(request, post_id):
         comment.author = request.user
         comment.post = post
         comment.save()
-    print(form.errors)
     return redirect('posts:post_detail', post_id)
 
 
@@ -95,10 +93,10 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list = author.posts.all()
     page_obj = use_paginator(request, post_list)
-    following = False
-    if request.user.is_authenticated:
-        if Follow.objects.filter(user=request.user, author=author).exists():
-            following = True
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user,
+        author=author
+    ).exists()
     context = {
         'posts': post_list,
         'page_obj': page_obj,
@@ -130,8 +128,7 @@ def profile_follow(request, username):
             user=request.user,
             author=author).exists()):
         follower = request.user
-        followed = User.objects.get(username=username)
-        Follow.objects.create(user=follower, author=followed)
+        Follow.objects.create(user=follower, author=author)
     return redirect('posts:profile', username=author)
 
 
@@ -139,6 +136,5 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     is_follower = Follow.objects.filter(user=request.user, author=author)
-    if is_follower.exists():
-        is_follower.delete()
+    is_follower.delete()
     return redirect('posts:profile', username=author)
